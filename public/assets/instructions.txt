@@ -1,0 +1,6 @@
+Copy the files `logo.png` and `Flier.png` from the project root into this folder so the React app can load them at /assets/logo.png and /assets/Flier.png.
+
+You can copy them manually or run a shell command in PowerShell:
+
+Copy-Item "..\logo.png" "assets\logo.png"
+Copy-Item "..\Flier.png" "assets\Flier.png"

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: adhra-backend
+    env: node
+    rootDir: server
+    buildCommand: npm install && npx prisma generate
+    startCommand: node index.js
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: DATABASE_URL
+        value: ${{ env.DATABASE_URL }}
+      - key: PAYSTACK_SECRET_KEY
+        value: ${{ env.PAYSTACK_SECRET_KEY }}
+      - key: BANK_NAME
+        sync: false
+      - key: BANK_ACCOUNT_NAME
+        sync: false
+      - key: BANK_ACCOUNT_NUMBER
+        sync: false

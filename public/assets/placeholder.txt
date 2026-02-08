@@ -1,0 +1,1 @@
+Place `logo.png` and `Flier.png` from the project root into this folder so the React app can reference them at /assets/logo.png and /assets/Flier.png.

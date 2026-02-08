@@ -1,0 +1,335 @@
+import { useEffect, useState } from 'react'
+import Footer from '../components/Footer'
+import Testimonials from '../components/Testimonials'
+import TrustBadges from '../components/TrustBadges'
+import FAQ from '../components/FAQ'
+import Toast from '../components/Toast'
+import { validateContactForm } from '../utils/validation'
+import { getProducts, getCart, setCart, getClientId } from '../utils/api'
+
+async function addToCart(productId) {
+  const clientId = getClientId()
+  const products = await getProducts()
+  const product = products.find(p => Number(p.id) === Number(productId))
+  if (!product) return alert('Product not found')
+
+  const cartData = await getCart(clientId)
+  const items = cartData.items || []
+  const existing = items.find(i => Number(i.productId) === Number(product.id))
+  if (existing) existing.quantity += 1
+  else items.push({ productId: product.id, name: product.name, price: parseInt(product.price) || 0, quantity: 1, image: product.image })
+  await setCart(clientId, items)
+  window.dispatchEvent(new Event('cart:updated'))
+  alert(`${product.name} added to cart!`)
+}
+
+export default function Home() {
+  const [products, setProducts] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [sortBy, setSortBy] = useState('featured')
+  const [contactErrors, setContactErrors] = useState({})
+  const [contactLoading, setContactLoading] = useState(false)
+  const [toast, setToast] = useState(null)
+
+  const categories = ['All', 'Electronics', 'Fashion', 'Home', 'Beauty', 'Sports']
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const p = await getProducts().catch(() => [])
+      if (p.length === 0) {
+        // demo fallback with categories
+        const demo = [
+          {
+            id: 1,
+            name: 'Sample Product',
+            price: '1000',
+            description: 'Demo item — add real products via Admin',
+            category: 'Electronics',
+            image: '/assets/Flier.png',
+            rating: 4.5,
+            reviews: 24
+          }
+        ]
+        setProducts(demo)
+      } else {
+        setProducts(p)
+      }
+    }
+    loadProducts()
+  }, [])
+
+  // Filter and search products
+  const filteredProducts = products
+    .filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory
+      return matchesSearch && matchesCategory
+    })
+    .sort((a, b) => {
+      if (sortBy === 'price-low') return (a.price || 0) - (b.price || 0)
+      if (sortBy === 'price-high') return (b.price || 0) - (a.price || 0)
+      if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0)
+      return 0 // featured (original order)
+    })
+
+  const renderStars = (rating) => {
+    if (!rating) return '☆☆☆☆☆'
+    const stars = Math.round(rating)
+    return '⭐'.repeat(stars) + '☆'.repeat(5 - stars)
+  }
+
+  return (
+    <main role="main">
+      <section className="hero" id="home">
+        <div className="hero-background">
+          <img src="/assets/Flier.png" alt="ADHRA Business Flier" className="hero-flier-bg" />
+        </div>
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <h1 className="hero-title">Welcome to ADHRA</h1>
+          <p className="hero-subtitle">Premium Quality Products. Exceptional Service. Trusted by Thousands.</p>
+        </div>
+      </section>
+
+      <section id="products" className="products">
+        <h2>Our Products</h2>
+
+        <div className="products-controls">
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search products"
+              className="search-input"
+            />
+          </div>
+
+          <div className="filters-container">
+            <div className="filter-group">
+              <label htmlFor="category-filter" className="filter-label">Category:</label>
+              <select
+                id="category-filter"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                aria-label="Filter by category"
+                className="filter-select"
+              >
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="sort-filter" className="filter-label">Sort by:</label>
+              <select
+                id="sort-filter"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort products"
+                className="filter-select"
+              >
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="products-grid">
+          {filteredProducts.length === 0 ? (
+            <p className="no-products-message">No products found. Try adjusting your filters.</p>
+          ) : (
+            filteredProducts.map(p => (
+              <div className="product-card" key={p.id}>
+                <div className="product-image-wrapper">
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="product-img"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="product-content">
+                  <h3>{p.name}</h3>
+                  {p.category && <p className="product-category">{p.category}</p>}
+                  <p className="product-description">{p.description}</p>
+                  {p.rating && (
+                    <div className="product-rating">
+                      <span className="stars">{renderStars(p.rating)}</span>
+                      <span className="rating-text">{p.rating} ({p.reviews || 0} reviews)</span>
+                    </div>
+                  )}
+                  <p className="price">₦{parseInt(p.price).toLocaleString()}</p>
+                  <button className="add-to-cart" onClick={() => addToCart(p.id)} aria-label={`Add ${p.name} to cart`}>Add to Cart</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      <section id="about" className="about">
+        <div className="about-content">
+          <h2>About ADHRA</h2>
+          <p>ADHRA is a leading online marketplace dedicated to bringing you the finest selection of products with uncompromising quality standards. Founded with a mission to make premium products accessible to everyone, we've built our reputation on trust, reliability, and exceptional customer service.</p>
+          <div className="about-features">
+            <div className="feature">
+              <h4>✓ Quality Assured</h4>
+              <p>Every product is carefully selected and tested</p>
+            </div>
+            <div className="feature">
+              <h4>✓ Fast Delivery</h4>
+              <p>Quick processing and shipping nationwide</p>
+            </div>
+            <div className="feature">
+              <h4>✓ Secure Payment</h4>
+              <p>Multiple payment options for your convenience</p>
+            </div>
+            <div className="feature">
+              <h4>✓ Customer First</h4>
+              <p>24/7 support for all your inquiries</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="contact">
+        <h2>Get in Touch</h2>
+        <p className="contact-subtitle">Have questions? We'd love to hear from you. Reach out to us anytime!</p>
+        <form className="contact-form" onSubmit={handleContactSubmit} aria-label="Contact form">
+          <div className="form-group">
+            <label htmlFor="contactName">Your Name *</label>
+            <input
+              id="contactName"
+              name="name"
+              type="text"
+              placeholder="Full Name"
+              required
+              aria-required="true"
+              autoComplete="name"
+              className={contactErrors.name ? 'input-error' : ''}
+            />
+            {contactErrors.name && <span className="error-message">{contactErrors.name}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="contactEmail">Email Address *</label>
+            <input
+              id="contactEmail"
+              name="email"
+              type="email"
+              placeholder="your@email.com"
+              required
+              aria-required="true"
+              autoComplete="email"
+              className={contactErrors.email ? 'input-error' : ''}
+            />
+            {contactErrors.email && <span className="error-message">{contactErrors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="contactPhone">Phone Number *</label>
+            <input
+              id="contactPhone"
+              name="phone"
+              type="tel"
+              placeholder="+234..."
+              autoComplete="tel"
+              className={contactErrors.phone ? 'input-error' : ''}
+            />
+            {contactErrors.phone && <span className="error-message">{contactErrors.phone}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="contactSubject">Subject *</label>
+            <input
+              id="contactSubject"
+              name="subject"
+              type="text"
+              placeholder="What is this about?"
+              required
+              aria-required="true"
+              className={contactErrors.subject ? 'input-error' : ''}
+            />
+            {contactErrors.subject && <span className="error-message">{contactErrors.subject}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="contactMessage">Message *</label>
+            <textarea
+              id="contactMessage"
+              name="message"
+              placeholder="Your Message"
+              rows="5"
+              required
+              aria-required="true"
+              className={contactErrors.message ? 'input-error' : ''}
+            ></textarea>
+            {contactErrors.message && <span className="error-message">{contactErrors.message}</span>}
+          </div>
+
+          <button type="submit" disabled={contactLoading} className={contactLoading ? 'loading' : ''}>
+            {contactLoading ? '🔄 Sending...' : 'Send Message'}
+          </button>
+        </form>
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+      </section>
+
+      <TrustBadges />
+      <Testimonials />
+      <FAQ />
+
+      <Footer />
+    </main>
+  )
+
+  function handleContactSubmit(e) {
+    e.preventDefault()
+    const form = e.target
+    const formData = {
+      name: form.querySelector('[name="name"]').value.trim(),
+      email: form.querySelector('[name="email"]').value.trim(),
+      phone: form.querySelector('[name="phone"]').value.trim(),
+      subject: form.querySelector('[name="subject"]').value.trim(),
+      message: form.querySelector('[name="message"]').value.trim()
+    }
+
+    const validationErrors = validateContactForm(formData)
+    if (Object.keys(validationErrors).length > 0) {
+      setContactErrors(validationErrors)
+      setToast({ message: 'Please correct the form errors', type: 'error' })
+      return
+    }
+
+    setContactErrors({})
+    setContactLoading(true)
+
+    // Simulate sending
+    setTimeout(() => {
+      const messages = []
+      messages.push({
+        ...formData,
+        timestamp: new Date().toLocaleString(),
+        id: Date.now()
+      })
+      localStorage.setItem('contactMessages', JSON.stringify(messages))
+      setContactLoading(false)
+      setToast({ message: '✅ Thank you! We\'ll respond within 24 hours.', type: 'success' })
+      form.reset()
+    }, 1500)
+  }
+}
