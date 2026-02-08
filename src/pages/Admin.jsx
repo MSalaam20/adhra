@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createProduct, deleteProduct as deleteProductApi, getProducts } from '../utils/api'
+import { createProduct, deleteProduct as deleteProductApi, getProducts, getContactMessages } from '../utils/api'
 
 const ADMIN_PASSWORD = 'adhra123'
 
@@ -7,6 +7,10 @@ export default function Admin() {
   const [loggedIn, setLoggedIn] = useState(false)
   const [products, setProducts] = useState([])
   const [message, setMessage] = useState('')
+  const [adminKey, setAdminKey] = useState('')
+  const [contactMessages, setContactMessages] = useState([])
+  const [contactError, setContactError] = useState('')
+  const [loadingMessages, setLoadingMessages] = useState(false)
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -64,6 +68,23 @@ export default function Admin() {
     setMessage('Product deleted')
   }
 
+  async function loadContactMessages() {
+    if (!adminKey.trim()) {
+      setContactError('Enter admin key')
+      return
+    }
+    setLoadingMessages(true)
+    setContactError('')
+    try {
+      const data = await getContactMessages(adminKey.trim())
+      setContactMessages(data.messages || [])
+    } catch (err) {
+      setContactError(err.message || 'Failed to load messages')
+    } finally {
+      setLoadingMessages(false)
+    }
+  }
+
   return (
     <div className="admin-container">
       {!loggedIn ? (
@@ -105,6 +126,36 @@ export default function Admin() {
                     <div>{p.description}</div>
                     <button onClick={() => deleteProduct(p.id)} aria-label={`Delete ${p.name}`}>Delete</button>
                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="contact-messages-section">
+            <h2>Contact Messages</h2>
+            <div className="contact-controls">
+              <input
+                type="password"
+                placeholder="Enter ADMIN_API_KEY"
+                value={adminKey}
+                onChange={(e) => setAdminKey(e.target.value)}
+                aria-label="Admin API key"
+              />
+              <button onClick={loadContactMessages} disabled={loadingMessages}>
+                {loadingMessages ? 'Loading...' : 'Load Messages'}
+              </button>
+            </div>
+            {contactError && <p className="error" role="status">{contactError}</p>}
+            <div className="contact-messages-list">
+              {contactMessages.length === 0 && <p>No messages found</p>}
+              {contactMessages.map((m) => (
+                <div className="contact-message" key={m.id}>
+                  <div className="contact-meta">
+                    <strong>{m.subject}</strong>
+                    <span>{new Date(m.createdAt).toLocaleString()}</span>
+                  </div>
+                  <div>{m.name} • {m.email} {m.phone ? `• ${m.phone}` : ''}</div>
+                  <p>{m.message}</p>
                 </div>
               ))}
             </div>

@@ -13,6 +13,10 @@ const PORT = process.env.PORT || 4000
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY
 
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
+const SENDGRID_FROM = process.env.SENDGRID_FROM
+const SENDGRID_TO = process.env.SENDGRID_TO
+
 const SMTP_HOST = process.env.SMTP_HOST
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10)
 const SMTP_SECURE = process.env.SMTP_SECURE === 'true'
@@ -34,7 +38,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })
 
-const canSendEmail = () => Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS && SMTP_FROM && SMTP_TO)
+const canSendEmail = () => Boolean(
+  (SENDGRID_API_KEY && SENDGRID_FROM && SENDGRID_TO) ||
+  (SMTP_HOST && SMTP_USER && SMTP_PASS && SMTP_FROM && SMTP_TO)
+)
 
 const getTransporter = () => {
   return nodemailer.createTransport({
@@ -46,6 +53,54 @@ const getTransporter = () => {
       pass: SMTP_PASS
     }
   })
+}
+
+const sendEmail = async ({ name, email, phone, subject, message }) => {
+  const content = [
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Phone: ${phone || 'N/A'}`,
+    `Subject: ${subject}`,
+    '',
+    message
+  ].join('\n')
+
+  if (SENDGRID_API_KEY && SENDGRID_FROM && SENDGRID_TO) {
+    const resp = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: SENDGRID_TO }] }],
+        from: { email: SENDGRID_FROM },
+        reply_to: { email },
+        subject: `Contact Form: ${subject}`,
+        content: [{ type: 'text/plain', value: content }]
+      })
+    })
+
+    if (!resp.ok) {
+      const errText = await resp.text()
+      throw new Error(`SendGrid error: ${errText}`)
+    }
+    return true
+  }
+
+  if (SMTP_HOST && SMTP_USER && SMTP_PASS && SMTP_FROM && SMTP_TO) {
+    const transporter = getTransporter()
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: SMTP_TO,
+      replyTo: email,
+      subject: `Contact Form: ${subject}`,
+      text: content
+    })
+    return true
+  }
+
+  return false
 }
 
 const saveCart = async (clientId, items) => {
@@ -161,22 +216,12 @@ app.post('/api/contact', async (req, res) => {
 
     let emailSent = false
     if (canSendEmail()) {
-      const transporter = getTransporter()
-      await transporter.sendMail({
-        from: SMTP_FROM,
-        to: SMTP_TO,
-        replyTo: email,
-        subject: `Contact Form: ${subject}`,
-        text: [
-          `Name: ${name}`,
-          `Email: ${email}`,
-          `Phone: ${phone || 'N/A'}`,
-          `Subject: ${subject}`,
-          '',
-          message
-        ].join('\n')
-      })
-      emailSent = true
+      try {
+        emailSent = await sendEmail({ name, email, phone, subject, message })
+      } catch (emailErr) {
+        console.error(emailErr)
+        emailSent = false
+      }
     }
 
     return res.json({ ok: true, emailSent, id: record.id })

@@ -40,3 +40,7 @@ export const setCart = (clientId, items) => request(`/api/cart/${clientId}`, {
 export const clearCart = (clientId) => request(`/api/cart/${clientId}/clear`, {
   method: 'POST'
 })
+
+export const getContactMessages = (adminKey) => request('/api/contact/messages', {
+  headers: { 'x-admin-key': adminKey }
+})
