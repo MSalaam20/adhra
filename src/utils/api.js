@@ -1,4 +1,4 @@
-const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
+const apiBase = import.meta.env.VITE_API_BASE || 'https://adhra-8.onrender.com'
 
 export const getClientId = () => {
   let id = localStorage.getItem('clientId')

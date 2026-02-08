@@ -10,7 +10,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState(null)
   const [bankInfo, setBankInfo] = useState(null)
-  const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
+  const apiBase = import.meta.env.VITE_API_BASE || 'https://adhra-8.onrender.com'
 
   useEffect(() => {
     loadCart()
