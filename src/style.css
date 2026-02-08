@@ -2318,6 +2318,31 @@ button:disabled, .btn:disabled {
     color: var(--secondary-color);
 }
 
+/* Legal pages */
+.legal-page {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: left;
+    padding: var(--space-4xl) var(--space-xl);
+}
+
+.legal-page h1 {
+    margin-bottom: var(--space-sm);
+}
+
+.legal-section {
+    margin-top: var(--space-2xl);
+}
+
+.legal-list {
+    padding-left: 1.25rem;
+    margin-bottom: var(--space-md);
+}
+
+.legal-list li {
+    margin-bottom: var(--space-sm);
+}
+
 /* Footer responsive */
 @media (max-width: 768px) {
     .footer {

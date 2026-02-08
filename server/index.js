@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import nodemailer from 'nodemailer'
 import { PrismaClient } from '@prisma/client'
 
 dotenv.config()
@@ -10,6 +11,15 @@ const prisma = new PrismaClient()
 
 const PORT = process.env.PORT || 4000
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY
+
+const SMTP_HOST = process.env.SMTP_HOST
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10)
+const SMTP_SECURE = process.env.SMTP_SECURE === 'true'
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER
+const SMTP_TO = process.env.SMTP_TO || SMTP_FROM
 
 const bankDetails = {
   bankName: process.env.BANK_NAME || 'Your Bank Name',
@@ -23,6 +33,20 @@ app.use(express.json({ limit: '5mb' }))
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })
+
+const canSendEmail = () => Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS && SMTP_FROM && SMTP_TO)
+
+const getTransporter = () => {
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS
+    }
+  })
+}
 
 const saveCart = async (clientId, items) => {
   const cart = await prisma.cart.upsert({
@@ -115,6 +139,68 @@ app.post('/api/cart/:clientId/clear', async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
+  }
+})
+
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, phone, subject, message } = req.body
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({ error: 'Missing required fields' })
+    }
+
+    const record = await prisma.contactMessage.create({
+      data: {
+        name,
+        email,
+        phone: phone || null,
+        subject,
+        message
+      }
+    })
+
+    let emailSent = false
+    if (canSendEmail()) {
+      const transporter = getTransporter()
+      await transporter.sendMail({
+        from: SMTP_FROM,
+        to: SMTP_TO,
+        replyTo: email,
+        subject: `Contact Form: ${subject}`,
+        text: [
+          `Name: ${name}`,
+          `Email: ${email}`,
+          `Phone: ${phone || 'N/A'}`,
+          `Subject: ${subject}`,
+          '',
+          message
+        ].join('\n')
+      })
+      emailSent = true
+    }
+
+    return res.json({ ok: true, emailSent, id: record.id })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Server error' })
+  }
+})
+
+app.get('/api/contact/messages', async (req, res) => {
+  try {
+    const apiKey = req.headers['x-admin-key']
+    if (!ADMIN_API_KEY || apiKey !== ADMIN_API_KEY) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    })
+    return res.json({ messages })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Server error' })
   }
 })
 

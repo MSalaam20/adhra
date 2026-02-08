@@ -31,6 +31,7 @@ export default function Home() {
   const [contactErrors, setContactErrors] = useState({})
   const [contactLoading, setContactLoading] = useState(false)
   const [toast, setToast] = useState(null)
+  const apiBase = import.meta.env.VITE_API_BASE || 'https://adhra-8.onrender.com'
 
   const categories = ['All', 'Electronics', 'Fashion', 'Home', 'Beauty', 'Sports']
 
@@ -297,7 +298,7 @@ export default function Home() {
     </main>
   )
 
-  function handleContactSubmit(e) {
+  async function handleContactSubmit(e) {
     e.preventDefault()
     const form = e.target
     const formData = {
@@ -318,18 +319,21 @@ export default function Home() {
     setContactErrors({})
     setContactLoading(true)
 
-    // Simulate sending
-    setTimeout(() => {
-      const messages = []
-      messages.push({
-        ...formData,
-        timestamp: new Date().toLocaleString(),
-        id: Date.now()
+    try {
+      const resp = await fetch(`${apiBase}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       })
-      localStorage.setItem('contactMessages', JSON.stringify(messages))
-      setContactLoading(false)
+      const data = await resp.json()
+      if (!resp.ok) throw new Error(data.error || 'Message failed')
+
       setToast({ message: '✅ Thank you! We\'ll respond within 24 hours.', type: 'success' })
       form.reset()
-    }, 1500)
+    } catch (err) {
+      setToast({ message: err.message || 'Message failed', type: 'error' })
+    } finally {
+      setContactLoading(false)
+    }
   }
 }

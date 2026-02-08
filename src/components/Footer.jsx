@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
@@ -39,9 +41,9 @@ export default function Footer() {
       <div className="footer-bottom">
         <p>&copy; {currentYear} ADHRA. All rights reserved.</p>
         <div className="footer-links">
-          <a href="#privacy">Privacy Policy</a>
-          <a href="#terms">Terms of Service</a>
-          <a href="#returns">Returns & Refunds</a>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Service</Link>
+          <Link to="/returns">Returns & Refunds</Link>
         </div>
       </div>
     </footer>
