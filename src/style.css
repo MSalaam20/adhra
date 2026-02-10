@@ -16,6 +16,9 @@
     --lavender-50: #f7f1ff;
     --lavender-100: #efe7ff;
     --lavender-200: #e4d7ff;
+    --plum-900: #230a3d;
+    --plum-700: #3a1166;
+    --plum-500: #6d28d9;
     
     /* Semantic Colors */
     --success-color: #10b981;
@@ -78,7 +81,10 @@ body {
     font-family: 'Manrope', 'Segoe UI', sans-serif;
     line-height: 1.6;
     color: var(--gray-800);
-    background: linear-gradient(140deg, #ffffff 0%, var(--lavender-50) 40%, #ffffff 85%);
+    background:
+        radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(167, 139, 250, 0.18), transparent 40%),
+        linear-gradient(130deg, #ffffff 0%, var(--lavender-50) 35%, #ffffff 78%);
     font-size: var(--text-base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -92,12 +98,30 @@ body::before {
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(circle at 12% 20%, rgba(139, 92, 246, 0.16), transparent 45%),
-        radial-gradient(circle at 80% 10%, rgba(167, 139, 250, 0.18), transparent 40%),
-        radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.12), transparent 48%),
-        linear-gradient(120deg, rgba(255, 255, 255, 0.9) 0%, rgba(243, 232, 255, 0.7) 45%, rgba(255, 255, 255, 0.95) 100%);
-    animation: pageGlow 18s ease-in-out infinite;
+        conic-gradient(from 120deg at 30% 20%, rgba(139, 92, 246, 0.2), rgba(255, 255, 255, 0) 40%, rgba(167, 139, 250, 0.24) 70%, rgba(255, 255, 255, 0) 100%),
+        radial-gradient(circle at 75% 30%, rgba(109, 40, 217, 0.16), transparent 45%),
+        radial-gradient(circle at 25% 80%, rgba(139, 92, 246, 0.12), transparent 50%);
+    filter: blur(30px);
+    opacity: 0.9;
+    animation: auroraShift 22s ease-in-out infinite;
 }
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(115deg, rgba(139, 92, 246, 0.04) 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(25deg, rgba(91, 33, 182, 0.03) 0 1px, transparent 1px 14px);
+    mix-blend-mode: multiply;
+    opacity: 0.6;
+}
+
+main {
+    position: relative;
+    z-index: 0;
 
 /* Typography System */
 h1 {
@@ -169,7 +193,7 @@ a:hover {
 
 /* Navigation */
 .navbar {
-    background: var(--primary-color);
+    background: linear-gradient(120deg, #6d28d9, #8b5cf6 55%, #a78bfa 100%);
     padding: var(--space-md) 0;
     position: sticky;
     top: 0;
@@ -696,9 +720,15 @@ button:disabled, .btn:disabled {
     max-width: 1200px;
     margin: 4rem auto;
     padding: 0 2rem;
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(243, 232, 255, 0.7));
+    background:
+        radial-gradient(circle at 12% 18%, rgba(139, 92, 246, 0.08), transparent 45%),
+        radial-gradient(circle at 85% 12%, rgba(167, 139, 250, 0.12), transparent 45%),
+        linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(243, 232, 255, 0.75));
     border-radius: 20px;
     box-shadow: 0 24px 60px rgba(91, 33, 182, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.12);
+    background-size: 180% 180%;
+    animation: sectionFlow 18s ease-in-out infinite;
 }
 
 .products h2 {
@@ -906,13 +936,19 @@ button:disabled, .btn:disabled {
 
 /* About Section */
 .about {
-    background: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(243, 232, 255, 0.75));
+    background:
+        radial-gradient(circle at 20% 0%, rgba(139, 92, 246, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 100%, rgba(167, 139, 250, 0.1), transparent 45%),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.92), rgba(243, 232, 255, 0.8));
     max-width: 1200px;
     margin: 4rem auto;
     padding: 3rem 2rem;
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 18px 40px rgba(91, 33, 182, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    background-size: 170% 170%;
+    animation: sectionFlow 20s ease-in-out infinite;
 }
 
 .about-content h2 {
@@ -964,10 +1000,15 @@ button:disabled, .btn:disabled {
     margin: var(--space-4xl) auto;
     padding: 0 var(--space-xl);
     text-align: center;
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(243, 232, 255, 0.8));
+    background:
+        radial-gradient(circle at 15% 10%, rgba(139, 92, 246, 0.14), transparent 42%),
+        radial-gradient(circle at 80% 90%, rgba(167, 139, 250, 0.12), transparent 45%),
+        linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(243, 232, 255, 0.82));
     border-radius: 20px;
     box-shadow: 0 22px 50px rgba(91, 33, 182, 0.08);
     border: 1px solid rgba(139, 92, 246, 0.1);
+    background-size: 170% 170%;
+    animation: sectionFlow 18s ease-in-out infinite;
 }
 
 .contact h2 {
@@ -1068,11 +1109,17 @@ button:disabled, .btn:disabled {
 
 /* Trust Badges Section */
 .trust-badges {
-    background: linear-gradient(140deg, rgba(255, 255, 255, 0.95) 0%, rgba(243, 232, 255, 0.75) 55%, rgba(255, 255, 255, 0.85) 100%);
+    background:
+        radial-gradient(circle at 10% 15%, rgba(139, 92, 246, 0.1), transparent 45%),
+        radial-gradient(circle at 90% 20%, rgba(167, 139, 250, 0.14), transparent 45%),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.96) 0%, rgba(243, 232, 255, 0.78) 55%, rgba(255, 255, 255, 0.9) 100%);
     padding: 4rem 2rem;
     margin: 4rem 0;
     border-radius: 24px;
     box-shadow: 0 20px 50px rgba(91, 33, 182, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    background-size: 180% 180%;
+    animation: sectionFlow 21s ease-in-out infinite;
 }
 
 .trust-container {
@@ -1130,11 +1177,17 @@ button:disabled, .btn:disabled {
 
 /* Testimonials Section */
 .testimonials {
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(243, 232, 255, 0.7));
+    background:
+        radial-gradient(circle at 18% 20%, rgba(139, 92, 246, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 85%, rgba(167, 139, 250, 0.1), transparent 45%),
+        linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(243, 232, 255, 0.72));
     padding: var(--space-4xl) var(--space-xl);
     margin: var(--space-4xl) 0;
     border-radius: 24px;
     box-shadow: 0 22px 50px rgba(91, 33, 182, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    background-size: 180% 180%;
+    animation: sectionFlow 19s ease-in-out infinite;
 }
 
 .testimonials-container {
@@ -1209,11 +1262,17 @@ button:disabled, .btn:disabled {
 
 /* FAQ Section */
 .faq {
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(243, 232, 255, 0.75));
+    background:
+        radial-gradient(circle at 12% 10%, rgba(139, 92, 246, 0.12), transparent 40%),
+        radial-gradient(circle at 88% 88%, rgba(167, 139, 250, 0.12), transparent 45%),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(243, 232, 255, 0.78));
     padding: 4rem 2rem;
     margin: 4rem 0;
     border-radius: 24px;
     box-shadow: 0 20px 50px rgba(91, 33, 182, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    background-size: 180% 180%;
+    animation: sectionFlow 20s ease-in-out infinite;
 }
 
 .faq-container {
@@ -2805,6 +2864,26 @@ button.loading {
     50% {
         transform: translateY(-20px) scale(1.02);
         opacity: 1;
+    }
+}
+
+@keyframes auroraShift {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0.85;
+    }
+    50% {
+        transform: translateY(-18px) rotate(8deg) scale(1.04);
+        opacity: 1;
+    }
+}
+
+@keyframes sectionFlow {
+    0%, 100% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
     }
 }
 
