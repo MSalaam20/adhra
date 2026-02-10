@@ -84,13 +84,50 @@ export default function Home() {
   return (
     <main role="main">
       <section className="hero" id="home">
-        <div className="hero-background">
-          <img src="/assets/Flier.png" alt="ADHRA Business Flier" className="hero-flier-bg" />
+        <div className="hero-background" aria-hidden="true">
+          <div className="hero-glow"></div>
         </div>
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          <h1 className="hero-title">Welcome to ADHRA</h1>
-          <p className="hero-subtitle">Premium Quality Products. Exceptional Service. Trusted by Thousands.</p>
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <span className="hero-badge">Nigerian trusted marketplace</span>
+            <h1 className="hero-title">
+              Welcome to <span className="hero-title-accent">ADHRA</span>.
+              Quality you can trust, delivery you can track.
+            </h1>
+            <p className="hero-subtitle">
+              Shop premium essentials curated for everyday life. Fast nationwide delivery,
+              secure checkout, and responsive support when you need it.
+            </p>
+            <div className="hero-actions">
+              <a className="hero-cta primary" href="#products">Shop products</a>
+              <a className="hero-cta ghost" href="#contact">Talk to support</a>
+            </div>
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <span>Delivery</span>
+                <strong>24-72 hrs</strong>
+              </div>
+              <div className="hero-stat">
+                <span>Support</span>
+                <strong>24/7 chat</strong>
+              </div>
+              <div className="hero-stat">
+                <span>Secure</span>
+                <strong>Encrypted pay</strong>
+              </div>
+            </div>
+          </div>
+          <div className="hero-showcase" aria-hidden="true">
+            <div className="hero-card">
+              <img src="/assets/Flier.png" alt="" className="hero-card-image" />
+              <div className="hero-card-body">
+                <p className="hero-card-title">Featured essentials</p>
+                <p className="hero-card-text">Handpicked for quality, price, and fast delivery.</p>
+              </div>
+            </div>
+            <div className="hero-pill">Verified quality</div>
+            <div className="hero-pill">Nationwide shipping</div>
+          </div>
         </div>
       </section>
 
