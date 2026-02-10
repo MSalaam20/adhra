@@ -105,7 +105,7 @@ body.pause-animations .hero-background::before,
 body.pause-animations .hero::before,
 body.pause-animations .hero::after {
     opacity: 0.6;
-    filter: blur(30px);
+    filter: blur(18px);
 }
 
 body.pause-animations .hero-card {
@@ -122,22 +122,13 @@ body::before {
         conic-gradient(from 120deg at 30% 20%, rgba(139, 92, 246, 0.2), rgba(255, 255, 255, 0) 40%, rgba(167, 139, 250, 0.24) 70%, rgba(255, 255, 255, 0) 100%),
         radial-gradient(circle at 75% 30%, rgba(109, 40, 217, 0.16), transparent 45%),
         radial-gradient(circle at 25% 80%, rgba(139, 92, 246, 0.12), transparent 50%);
-    filter: blur(30px);
-    opacity: 0.9;
+    filter: blur(18px);
+    opacity: 0.75;
     animation: auroraShift 22s ease-in-out infinite;
 }
 
 body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background-image:
-        repeating-linear-gradient(115deg, rgba(139, 92, 246, 0.04) 0 1px, transparent 1px 12px),
-        repeating-linear-gradient(25deg, rgba(91, 33, 182, 0.03) 0 1px, transparent 1px 14px);
-    mix-blend-mode: multiply;
-    opacity: 0.6;
+    content: none;
 }
 
 main {
@@ -153,15 +144,13 @@ main {
 .reveal {
     opacity: 0;
     transform: translateY(26px) scale(0.98);
-    filter: blur(2px);
-    transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+    transition: opacity 0.7s ease, transform 0.7s ease;
     will-change: transform, opacity;
 }
 
 .reveal.is-visible {
     opacity: 1;
     transform: translateY(0) scale(1);
-    filter: blur(0);
 }
 
 .products,
@@ -586,8 +575,8 @@ button:disabled, .btn:disabled {
     background:
         conic-gradient(from 220deg at 15% 30%, rgba(139, 92, 246, 0.25), rgba(255, 255, 255, 0) 45%, rgba(167, 139, 250, 0.25) 70%, rgba(255, 255, 255, 0) 100%),
         conic-gradient(from 40deg at 85% 70%, rgba(109, 40, 217, 0.2), rgba(255, 255, 255, 0) 50%, rgba(139, 92, 246, 0.22) 75%, rgba(255, 255, 255, 0) 100%);
-    filter: blur(45px);
-    opacity: 0.85;
+    filter: blur(28px);
+    opacity: 0.75;
     animation: heroGlow 18s ease-in-out infinite;
     will-change: transform, opacity;
 }
@@ -606,8 +595,8 @@ button:disabled, .btn:disabled {
     position: absolute;
     inset: -25% -10% -10% -10%;
     background: conic-gradient(from 120deg, rgba(139, 92, 246, 0.25), rgba(255, 255, 255, 0) 35%, rgba(167, 139, 250, 0.25) 55%, rgba(255, 255, 255, 0) 80%);
-    filter: blur(55px);
-    opacity: 0.95;
+    filter: blur(35px);
+    opacity: 0.85;
     animation: heroGlow 14s ease-in-out infinite;
     will-change: transform, opacity;
 }
@@ -747,7 +736,7 @@ button:disabled, .btn:disabled {
     border-radius: 28px;
     overflow: hidden;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(6px);
+    backdrop-filter: none;
     border: 1px solid rgba(255, 255, 255, 0.2);
     max-width: 360px;
     width: 100%;
