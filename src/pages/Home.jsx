@@ -60,6 +60,29 @@ export default function Home() {
     loadProducts()
   }, [])
 
+  useEffect(() => {
+    const targets = Array.from(document.querySelectorAll('.reveal'))
+    if (targets.length === 0) return
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      targets.forEach((el) => el.classList.add('is-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          obs.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.18, rootMargin: '0px 0px -10% 0px' })
+
+    targets.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [products])
+
   // Filter and search products
   const filteredProducts = products
     .filter(p => {
@@ -87,6 +110,8 @@ export default function Home() {
         <div className="hero-background" aria-hidden="true">
           <div className="hero-glow"></div>
         </div>
+        <div className="hero-wave" aria-hidden="true"></div>
+        <div className="hero-vcut" aria-hidden="true"></div>
         <div className="hero-grid">
           <div className="hero-copy">
             <span className="hero-badge">Nigerian trusted marketplace</span>
@@ -131,10 +156,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="products" className="products">
-        <h2>Our Products</h2>
+      <section id="products" className="products content-section">
+        <h2 className="reveal">Our Products</h2>
 
-        <div className="products-controls">
+        <div className="products-controls reveal">
           <div className="search-bar">
             <input
               type="text"
@@ -180,12 +205,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="products-grid">
+        <div className="products-grid reveal">
           {filteredProducts.length === 0 ? (
-            <p className="no-products-message">No products found. Try adjusting your filters.</p>
+            <p className="no-products-message reveal">No products found. Try adjusting your filters.</p>
           ) : (
             filteredProducts.map(p => (
-              <div className="product-card" key={p.id}>
+              <div className="product-card reveal" key={p.id}>
                 <div className="product-image-wrapper">
                   <img
                     src={p.image}
@@ -214,24 +239,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about" className="about">
+      <section id="about" className="about content-section">
         <div className="about-content">
-          <h2>About ADHRA</h2>
-          <p>ADHRA is a leading online marketplace dedicated to bringing you the finest selection of products with uncompromising quality standards. Founded with a mission to make premium products accessible to everyone, we've built our reputation on trust, reliability, and exceptional customer service.</p>
+          <h2 className="reveal">About ADHRA</h2>
+          <p className="reveal">ADHRA is a leading online marketplace dedicated to bringing you the finest selection of products with uncompromising quality standards. Founded with a mission to make premium products accessible to everyone, we've built our reputation on trust, reliability, and exceptional customer service.</p>
           <div className="about-features">
-            <div className="feature">
+            <div className="feature reveal">
               <h4>✓ Quality Assured</h4>
               <p>Every product is carefully selected and tested</p>
             </div>
-            <div className="feature">
+            <div className="feature reveal">
               <h4>✓ Fast Delivery</h4>
               <p>Quick processing and shipping nationwide</p>
             </div>
-            <div className="feature">
+            <div className="feature reveal">
               <h4>✓ Secure Payment</h4>
               <p>Multiple payment options for your convenience</p>
             </div>
-            <div className="feature">
+            <div className="feature reveal">
               <h4>✓ Customer First</h4>
               <p>24/7 support for all your inquiries</p>
             </div>
@@ -239,10 +264,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="contact" className="contact">
-        <h2>Get in Touch</h2>
-        <p className="contact-subtitle">Have questions? We'd love to hear from you. Reach out to us anytime!</p>
-        <form className="contact-form" onSubmit={handleContactSubmit} aria-label="Contact form">
+      <section id="contact" className="contact content-section">
+        <h2 className="reveal">Get in Touch</h2>
+        <p className="contact-subtitle reveal">Have questions? We'd love to hear from you. Reach out to us anytime!</p>
+        <form className="contact-form reveal" onSubmit={handleContactSubmit} aria-label="Contact form">
           <div className="form-group">
             <label htmlFor="contactName">Your Name *</label>
             <input

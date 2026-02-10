@@ -31,13 +31,13 @@ export default function Testimonials() {
   ]
 
   return (
-    <section className="testimonials" id="testimonials">
+    <section className="testimonials content-section" id="testimonials">
       <div className="testimonials-container">
-        <h2>What Our Customers Say</h2>
-        <p className="testimonials-subtitle">Join thousands of satisfied customers</p>
+        <h2 className="reveal">What Our Customers Say</h2>
+        <p className="testimonials-subtitle reveal">Join thousands of satisfied customers</p>
         <div className="testimonials-grid">
           {testimonials.map(testimonial => (
-            <div className="testimonial-card" key={testimonial.id}>
+            <div className="testimonial-card reveal" key={testimonial.id}>
               <div className="testimonial-header">
                 <span className="testimonial-avatar">{testimonial.image}</span>
                 <div>
