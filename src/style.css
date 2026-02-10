@@ -96,6 +96,22 @@ body {
     overflow-x: hidden;
 }
 
+body.pause-animations * {
+    animation-play-state: paused !important;
+}
+
+body.pause-animations .hero-glow,
+body.pause-animations .hero-background::before,
+body.pause-animations .hero::before,
+body.pause-animations .hero::after {
+    opacity: 0.6;
+    filter: blur(30px);
+}
+
+body.pause-animations .hero-card {
+    backdrop-filter: none;
+}
+
 body::before {
     content: '';
     position: fixed;

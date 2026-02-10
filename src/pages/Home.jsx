@@ -83,6 +83,24 @@ export default function Home() {
     return () => observer.disconnect()
   }, [products])
 
+  useEffect(() => {
+    let scrollTimer
+    const onScroll = () => {
+      document.body.classList.add('pause-animations')
+      window.clearTimeout(scrollTimer)
+      scrollTimer = window.setTimeout(() => {
+        document.body.classList.remove('pause-animations')
+      }, 160)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.clearTimeout(scrollTimer)
+      document.body.classList.remove('pause-animations')
+    }
+  }, [])
+
   // Filter and search products
   const filteredProducts = products
     .filter(p => {
