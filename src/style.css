@@ -537,9 +537,10 @@ button:disabled, .btn:disabled {
 .hero-card-image {
     width: 100%;
     display: block;
-    height: 240px;
+    height: auto;
     object-fit: contain;
     background: #ffffff;
+    padding: 0.75rem;
 }
 
 .hero-card-body {
