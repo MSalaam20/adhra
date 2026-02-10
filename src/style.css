@@ -141,18 +141,6 @@ main {
     contain-intrinsic-size: 900px 700px;
 }
 
-.reveal {
-    opacity: 0;
-    transform: translateY(26px) scale(0.98);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-    will-change: transform, opacity;
-}
-
-.reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
 .products,
 .about,
 .contact,

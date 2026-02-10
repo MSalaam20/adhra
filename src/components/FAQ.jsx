@@ -45,11 +45,11 @@ export default function FAQ() {
   return (
     <section className="faq content-section" id="faq">
       <div className="faq-container">
-        <h2 className="reveal">Frequently Asked Questions</h2>
-        <p className="faq-subtitle reveal">Find answers to common questions</p>
+        <h2>Frequently Asked Questions</h2>
+        <p className="faq-subtitle">Find answers to common questions</p>
         <div className="faq-list">
           {faqs.map((faq, idx) => (
-            <div className="faq-item reveal" key={idx}>
+            <div className="faq-item" key={idx}>
               <button
                 className="faq-question"
                 onClick={() => toggleFAQ(idx)}

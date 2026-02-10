@@ -35,10 +35,10 @@ export default function TrustBadges() {
   return (
     <section className="trust-badges content-section">
       <div className="trust-container">
-        <h2 className="reveal">Why Choose ADHRA?</h2>
+        <h2>Why Choose ADHRA?</h2>
         <div className="badges-grid">
           {badges.map((badge, idx) => (
-            <div className="badge reveal" key={idx}>
+            <div className="badge" key={idx}>
               <div className="badge-icon">{badge.icon}</div>
               <h3>{badge.title}</h3>
               <p>{badge.description}</p>
